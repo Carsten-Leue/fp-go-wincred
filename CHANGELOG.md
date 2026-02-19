@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/Carsten-Leue/fp-go-wincred/compare/v1.0.2...v1.0.3) (2026-02-19)
+
+
+### Bug Fixes
+
+* better decoding ([65c947b](https://github.com/Carsten-Leue/fp-go-wincred/commit/65c947b3f46625c3672b2307b664acb670fa362a))
+
 ## [1.0.2](https://github.com/Carsten-Leue/fp-go-wincred/compare/v1.0.1...v1.0.2) (2026-02-19)
 
 
