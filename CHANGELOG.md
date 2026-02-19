@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/Carsten-Leue/fp-go-wincred/compare/v1.0.1...v1.0.2) (2026-02-19)
+
+
+### Bug Fixes
+
+* add adapter ([705ac18](https://github.com/Carsten-Leue/fp-go-wincred/commit/705ac184addcbebe62adfca53acf99f24db1e016))
+
 ## [1.0.1](https://github.com/Carsten-Leue/fp-go-wincred/compare/v1.0.0...v1.0.1) (2026-02-18)
 
 
