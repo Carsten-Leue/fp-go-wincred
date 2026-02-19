@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/Carsten-Leue/fp-go-wincred/compare/v1.0.3...v1.0.4) (2026-02-19)
+
+
+### Bug Fixes
+
+* add codec and better tests ([dc78309](https://github.com/Carsten-Leue/fp-go-wincred/commit/dc783099bf2278b431a840ed8ffe15a63d72db4b))
+
 ## [1.0.3](https://github.com/Carsten-Leue/fp-go-wincred/compare/v1.0.2...v1.0.3) (2026-02-19)
 
 
