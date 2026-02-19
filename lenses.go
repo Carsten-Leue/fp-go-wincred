@@ -20,6 +20,7 @@ package main
 import (
 	time "time"
 
+	__array "github.com/IBM/fp-go/v2/array"
 	__iso_option "github.com/IBM/fp-go/v2/optics/iso/option"
 	__lens "github.com/IBM/fp-go/v2/optics/lens"
 	__lens_option "github.com/IBM/fp-go/v2/optics/lens/option"
@@ -130,8 +131,11 @@ func MakeCredentialAttributePrisms() CredentialAttributePrisms {
 		},
 		"wincred.CredentialAttribute.Keyword",
 	)
+	_fromNonEmptyCredentialBlob := __option.FromPredicate(__array.IsNonEmpty[byte])
 	_prismValue := __prism.MakePrismWithName(
-		func(s wincred.CredentialAttribute) __option.Option[[]byte] { return __option.Some(s.Value) },
+		func(s wincred.CredentialAttribute) __option.Option[[]byte] {
+			return _fromNonEmptyCredentialBlob(s.Value)
+		},
 		func(v []byte) wincred.CredentialAttribute {
 			return wincred.CredentialAttribute{Value: v}
 		},
@@ -155,8 +159,11 @@ func MakeCredentialAttributeRefPrisms() CredentialAttributeRefPrisms {
 		},
 		"wincred.CredentialAttribute.Keyword",
 	)
+	_fromNonEmptyCredentialBlob := __option.FromPredicate(__array.IsNonEmpty[byte])
 	_prismValue := __prism.MakePrismWithName(
-		func(s *wincred.CredentialAttribute) __option.Option[[]byte] { return __option.Some(s.Value) },
+		func(s *wincred.CredentialAttribute) __option.Option[[]byte] {
+			return _fromNonEmptyCredentialBlob(s.Value)
+		},
 		func(v []byte) *wincred.CredentialAttribute {
 			return &wincred.CredentialAttribute{Value: v}
 		},
@@ -432,8 +439,11 @@ func MakeGenericCredentialPrisms() GenericCredentialPrisms {
 		},
 		"wincred.GenericCredential.LastWritten",
 	)
+	_fromNonEmptyCredentialBlob := __option.FromPredicate(__array.IsNonEmpty[byte])
 	_prismCredentialBlob := __prism.MakePrismWithName(
-		func(s wincred.GenericCredential) __option.Option[[]byte] { return __option.Some(s.CredentialBlob) },
+		func(s wincred.GenericCredential) __option.Option[[]byte] {
+			return _fromNonEmptyCredentialBlob(s.CredentialBlob)
+		},
 		func(v []byte) wincred.GenericCredential {
 			return wincred.GenericCredential{Credential: wincred.Credential{CredentialBlob: v}}
 		},
@@ -520,8 +530,11 @@ func MakeGenericCredentialRefPrisms() GenericCredentialRefPrisms {
 		},
 		"wincred.GenericCredential.LastWritten",
 	)
+	_fromNonEmptyCredentialBlob := __option.FromPredicate(__array.IsNonEmpty[byte])
 	_prismCredentialBlob := __prism.MakePrismWithName(
-		func(s *wincred.GenericCredential) __option.Option[[]byte] { return __option.Some(s.CredentialBlob) },
+		func(s *wincred.GenericCredential) __option.Option[[]byte] {
+			return _fromNonEmptyCredentialBlob(s.CredentialBlob)
+		},
 		func(v []byte) *wincred.GenericCredential {
 			return &wincred.GenericCredential{Credential: wincred.Credential{CredentialBlob: v}}
 		},
@@ -832,8 +845,12 @@ func MakeCredentialPrisms() CredentialPrisms {
 		},
 		"wincred.Credential.LastWritten",
 	)
+	_fromNonEmptyCredentialBlob := __option.FromPredicate(__array.IsNonEmpty[byte])
+
 	_prismCredentialBlob := __prism.MakePrismWithName(
-		func(s wincred.Credential) __option.Option[[]byte] { return __option.Some(s.CredentialBlob) },
+		func(s wincred.Credential) __option.Option[[]byte] {
+			return _fromNonEmptyCredentialBlob(s.CredentialBlob)
+		},
 		func(v []byte) wincred.Credential {
 			return wincred.Credential{CredentialBlob: v}
 		},
@@ -914,8 +931,12 @@ func MakeCredentialRefPrisms() CredentialRefPrisms {
 		},
 		"wincred.Credential.LastWritten",
 	)
+	_fromNonEmptyCredentialBlob := __option.FromPredicate(__array.IsNonEmpty[byte])
+
 	_prismCredentialBlob := __prism.MakePrismWithName(
-		func(s *wincred.Credential) __option.Option[[]byte] { return __option.Some(s.CredentialBlob) },
+		func(s *wincred.Credential) __option.Option[[]byte] {
+			return _fromNonEmptyCredentialBlob(s.CredentialBlob)
+		},
 		func(v []byte) *wincred.Credential {
 			return &wincred.Credential{CredentialBlob: v}
 		},

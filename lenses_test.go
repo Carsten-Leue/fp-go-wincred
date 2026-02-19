@@ -88,15 +88,20 @@ func TestCredentialAttributePrisms(t *testing.T) {
 		assert.Equal(t, option.Of("key"), result)
 	})
 
-	t.Run("Value prism always returns Some", func(t *testing.T) {
+	t.Run("Value prism returns Some for non-empty", func(t *testing.T) {
 		attr := wincred.CredentialAttribute{Keyword: "key", Value: []byte("value")}
 		result := prisms.Value.GetOption(attr)
 		assert.Equal(t, option.Of([]byte("value")), result)
+	})
 
-		// Even for nil/empty
+	t.Run("Value prism returns None for empty", func(t *testing.T) {
 		attrEmpty := wincred.CredentialAttribute{Keyword: "key", Value: nil}
 		resultEmpty := prisms.Value.GetOption(attrEmpty)
-		assert.True(t, option.IsSome(resultEmpty))
+		assert.Equal(t, option.None[[]byte](), resultEmpty)
+
+		attrEmptySlice := wincred.CredentialAttribute{Keyword: "key", Value: []byte{}}
+		resultEmptySlice := prisms.Value.GetOption(attrEmptySlice)
+		assert.Equal(t, option.None[[]byte](), resultEmptySlice)
 	})
 
 	t.Run("ReverseGet creates struct with field", func(t *testing.T) {
@@ -204,12 +209,18 @@ func TestGenericCredentialPrisms(t *testing.T) {
 		assert.Equal(t, option.Of("my-target"), result)
 	})
 
-	t.Run("CredentialBlob prism always returns Some", func(t *testing.T) {
+	t.Run("CredentialBlob prism returns Some for non-empty", func(t *testing.T) {
 		cred := wincred.GenericCredential{
 			Credential: wincred.Credential{CredentialBlob: []byte("secret")},
 		}
 		result := prisms.CredentialBlob.GetOption(cred)
 		assert.Equal(t, option.Of([]byte("secret")), result)
+	})
+
+	t.Run("CredentialBlob prism returns None for empty", func(t *testing.T) {
+		cred := wincred.GenericCredential{}
+		result := prisms.CredentialBlob.GetOption(cred)
+		assert.Equal(t, option.None[[]byte](), result)
 	})
 
 	t.Run("ReverseGet creates struct with field", func(t *testing.T) {
