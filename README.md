@@ -40,29 +40,26 @@ utf16 := UTF16LEString()
 ctx := context.Background()
 
 // 📖 Compose an effect to get username, then execute at the boundary
-getUsernameEffect := function.Pipe3(
+getUsernameEffect := function.Pipe1(
     GetGenericCredential()("my-app/credentials"),
     readerioresult.Map(lenses.UserName.Get),
-    readerioresult.GetOrElse(function.Constant1[error]("unknown")),
 )
-username := getUsernameEffect(ctx)()
+usernameResult := getUsernameEffect(ctx)()
+username := either.GetOrElse(function.Constant1[error]("unknown"))(usernameResult)
 fmt.Printf("Username: %s\n", username)
 
 // 📖 Compose an effect to get and decode password from UTF-16 LE
-getPasswordEffect := function.Pipe3(
+getPasswordEffect := function.Pipe2(
     GetGenericCredential()("my-app/credentials"),
     readerioresult.Map(lenses.CredentialBlob.Get),
     readerioresult.Map(utf16.GetOption),  // Returns Option[string]
 )
-// Execute at the boundary
+// Execute at the boundary and handle the result
 passwordResult := getPasswordEffect(ctx)()
-function.Pipe1(
-    passwordResult,
-    either.Fold(
-        func(err error) { fmt.Printf("Error: %v\n", err) },
-        func(password Option[string]) { fmt.Printf("Password: %v\n", password) },
-    ),
-)
+either.Fold(
+    func(err error) { fmt.Printf("Error: %v\n", err) },
+    func(password Option[string]) { fmt.Printf("Password: %v\n", password) },
+)(passwordResult)
 
 // ✏️ Create a new credential using lenses and UTF-16 LE encoding
 newCred := function.Pipe1(
@@ -75,31 +72,25 @@ newCred := function.Pipe1(
 
 // Compose the create effect, then execute at the boundary
 createEffect := NewGenericCredential(newCred)("my-app/credentials")
-function.Pipe1(
-    createEffect(ctx)(),
-    either.Fold(
-        func(err error) { fmt.Printf("Failed to create: %v\n", err) },
-        func(_ *wincred.GenericCredential) { fmt.Println("Created successfully!") },
-    ),
-)
+either.Fold(
+    func(err error) { fmt.Printf("Failed to create: %v\n", err) },
+    func(_ *wincred.GenericCredential) { fmt.Println("Created successfully!") },
+)(createEffect(ctx)())
 
 // 🗑️ Compose the delete effect, then execute at the boundary
 deleteEffect := DeleteGenericCredential()(existingCred)
-function.Pipe1(
-    deleteEffect(ctx)(),
-    either.Fold(
-        func(err error) { fmt.Printf("Failed to delete: %v\n", err) },
-        func(_ *wincred.GenericCredential) { fmt.Println("Deleted successfully!") },
-    ),
-)
+either.Fold(
+    func(err error) { fmt.Printf("Failed to delete: %v\n", err) },
+    func(_ *wincred.GenericCredential) { fmt.Println("Deleted successfully!") },
+)(deleteEffect(ctx)())
 
 // 📋 Compose an effect to count credentials, then execute at the boundary
-countEffect := function.Pipe3(
+countEffect := function.Pipe1(
     ListCredentials(),
     readerioresult.Map(array.Size[*wincred.Credential]),
-    readerioresult.GetOrElse(function.Constant1[error](0)),
 )
-count := countEffect(ctx)()
+countResult := countEffect(ctx)()
+count := either.GetOrElse(function.Constant1[error](0))(countResult)
 fmt.Printf("Found %d credentials\n", count)
 ```
 

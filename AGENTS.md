@@ -48,14 +48,18 @@ Prism behavior:
 
 ### Either/Option Assertions in Tests
 
-Prefer direct option/either comparison over boolean checks:
+Prefer direct option/either comparison over boolean checks for final assertions:
 
 ```go
-// CORRECT: Direct comparison
+// CORRECT: Direct comparison for assertions
 assert.Equal(t, option.Of("expected"), prism.GetOption(value))
 assert.Equal(t, option.None[string](), prism.GetOption(emptyValue))
+assert.Equal(t, either.Of[error]("expected"), getUsernameEffect(ctx)())
 
-// INCORRECT: Boolean checks followed by extraction
+// ACCEPTABLE: Boolean checks for preconditions/setup
+require.True(t, either.IsRight(createResult), "Failed to create credential")
+
+// INCORRECT: Boolean checks followed by extraction for final assertions
 require.True(t, option.IsSome(result))
 actual := option.GetOrElse(func() string { return "" })(result)
 assert.Equal(t, "expected", actual)
@@ -85,7 +89,11 @@ either.Fold(
 Key functions for effect composition:
 - `readerioresult.Map(f)` - Transform the success value
 - `readerioresult.Chain(f)` - Sequence effects (flatMap)
-- `readerioresult.GetOrElse(f)` - Provide default on error
+
+After executing at the boundary, use `either` functions to handle the result:
+- `either.Fold(onLeft, onRight)` - Handle both error and success cases
+- `either.GetOrElse(f)` - Extract value with default on error
+- `either.Map(f)` - Transform success value
 
 ## Testing
 

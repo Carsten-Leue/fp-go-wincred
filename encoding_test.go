@@ -135,3 +135,63 @@ func TestUTF16LEString_PrismLaws(t *testing.T) {
 		assert.Equal(t, original, reencoded)
 	})
 }
+
+// TestUTF16LEType_Encode verifies encoding produces correct UTF-16 LE bytes
+func TestUTF16LEType_Encode(t *testing.T) {
+	codecType := UTF16LEType()
+
+	testCases := []struct {
+		name     string
+		input    string
+		expected []byte
+	}{
+		{"simple ascii AB", "AB", []byte{0x41, 0x00, 0x42, 0x00}},
+		{"empty string", "", []byte{}},
+		{"hello", "hello", []byte{0x68, 0x00, 0x65, 0x00, 0x6c, 0x00, 0x6c, 0x00, 0x6f, 0x00}},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			encoded := codecType.Encode(tc.input)
+			assert.Equal(t, tc.expected, encoded)
+		})
+	}
+}
+
+// TestUTF16LEType_EncodeMatchesPrism verifies that Type and Prism produce the same encoding
+func TestUTF16LEType_EncodeMatchesPrism(t *testing.T) {
+	codecType := UTF16LEType()
+	prism := UTF16LEString()
+
+	testCases := []struct {
+		name  string
+		input string
+	}{
+		{"empty string", ""},
+		{"simple ascii", "hello"},
+		{"with spaces", "hello world"},
+		{"numbers", "12345"},
+		{"special chars", "hello@world.com"},
+		{"unicode", "héllo wörld"},
+		{"emoji", "hello 👋 world"},
+		{"chinese", "你好世界"},
+		{"japanese", "こんにちは"},
+		{"mixed", "Hello 世界 🌍"},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			typeEncoded := codecType.Encode(tc.input)
+			prismEncoded := prism.ReverseGet(tc.input)
+
+			assert.Equal(t, prismEncoded, typeEncoded, "Type and Prism should produce identical encoding")
+		})
+	}
+}
+
+// TestUTF16LEType_TypeName verifies the codec type has the correct name
+func TestUTF16LEType_TypeName(t *testing.T) {
+	codecType := UTF16LEType()
+
+	assert.Equal(t, "UTF16LE", codecType.Name())
+}
