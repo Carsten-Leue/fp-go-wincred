@@ -161,17 +161,11 @@ func TestSample_DeleteCredential(t *testing.T) {
 		),
 	)
 
-	createEffect := NewGenericCredential(testCred)(sampleTargetName)
-	createResult := createEffect(ctx)()
-	require.True(t, either.IsRight(createResult), "Failed to create credential for deletion")
-
-	existingCred := either.Fold(
-		func(err error) *wincred.GenericCredential { return nil },
-		func(c *wincred.GenericCredential) *wincred.GenericCredential { return c },
-	)(createResult)
-
-	// 🗑️ Compose the delete effect, then execute at the boundary
-	deleteEffect := DeleteGenericCredential()(existingCred)
+	// 🗑️ Compose create-then-delete as a single functional pipeline, then execute at the boundary
+	deleteEffect := function.Pipe1(
+		NewGenericCredential(testCred)(sampleTargetName),
+		readerioresult.Chain(DeleteGenericCredential()),
+	)
 
 	deleted := either.Fold(
 		func(err error) bool {
@@ -330,8 +324,10 @@ func TestSample_UTF16LEWithCredential(t *testing.T) {
 	lenses := MakeGenericCredentialRefLenses()
 
 	// ✏️ Set credential password with UTF-16 LE encoding
-	cred := wincred.NewGenericCredential("my-app/credentials")
-	cred = lenses.CredentialBlob.Set(utf16.ReverseGet("my-secret-password"))(cred)
+	cred := function.Pipe1(
+		wincred.NewGenericCredential("my-app/credentials"),
+		lenses.CredentialBlob.Set(utf16.ReverseGet("my-secret-password")),
+	)
 
 	// 📖 Read and decode credential password
 	blob := lenses.CredentialBlob.Get(cred)

@@ -5,6 +5,7 @@ package main
 import (
 	"testing"
 
+	"github.com/IBM/fp-go/v2/array"
 	"github.com/IBM/fp-go/v2/context/readerioresult"
 	"github.com/IBM/fp-go/v2/either"
 	"github.com/IBM/fp-go/v2/function"
@@ -25,10 +26,13 @@ var utf16Prism = UTF16LEString()
 // newTestCredential creates a new test credential with proper defaults.
 // The password is encoded as UTF-16 LE in the credential blob.
 func newTestCredential(username string, password string) *wincred.GenericCredential {
-	cred := wincred.NewGenericCredential(testTargetName)
-	cred = refLenses.UserName.Set(username)(cred)
-	cred = refLenses.CredentialBlob.Set(utf16Prism.ReverseGet(password))(cred)
-	return cred
+	return function.Pipe1(
+		wincred.NewGenericCredential(testTargetName),
+		function.Flow2(
+			refLenses.UserName.Set(username),
+			refLenses.CredentialBlob.Set(utf16Prism.ReverseGet(password)),
+		),
+	)
 }
 
 // withCredential creates a credential, runs the test function, and ensures cleanup.
@@ -178,14 +182,10 @@ func TestListCredentials(t *testing.T) {
 
 		// Verify our test credential is in the list
 		credLenses := MakeCredentialRefLenses()
-		found := false
-		for _, cred := range credentials {
-			if credLenses.TargetName.Get(cred) == testTargetName+"-list" {
-				found = true
-				break
-			}
-		}
-		assert.True(t, found, "Test credential should be in the list")
+		found := array.FindFirst(func(c *wincred.Credential) bool {
+			return credLenses.TargetName.Get(c) == testTargetName+"-list"
+		})(credentials)
+		assert.True(t, option.IsSome(found), "Test credential should be in the list")
 	})
 }
 

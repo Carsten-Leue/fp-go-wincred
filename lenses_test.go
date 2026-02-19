@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/IBM/fp-go/v2/function"
 	"github.com/IBM/fp-go/v2/option"
 	"github.com/danieljoos/wincred"
 	"github.com/stretchr/testify/assert"
@@ -288,14 +289,16 @@ func TestOptionalLenses(t *testing.T) {
 func TestLensComposition(t *testing.T) {
 	credLenses := MakeCredentialLenses()
 
-	// Create a credential and modify multiple fields using lens composition
-	cred := wincred.Credential{}
-
-	// Chain multiple lens operations
-	cred = credLenses.TargetName.Set("target")(cred)
-	cred = credLenses.UserName.Set("user")(cred)
-	cred = credLenses.Comment.Set("comment")(cred)
-	cred = credLenses.CredentialBlob.Set([]byte("secret"))(cred)
+	// Create a credential and modify multiple fields using functional composition
+	cred := function.Pipe1(
+		wincred.Credential{},
+		function.Flow4(
+			credLenses.TargetName.Set("target"),
+			credLenses.UserName.Set("user"),
+			credLenses.Comment.Set("comment"),
+			credLenses.CredentialBlob.Set([]byte("secret")),
+		),
+	)
 
 	assert.Equal(t, "target", credLenses.TargetName.Get(cred))
 	assert.Equal(t, "user", credLenses.UserName.Get(cred))
