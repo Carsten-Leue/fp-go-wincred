@@ -195,7 +195,7 @@ password := utf16.GetOption(blob)  // Option[string]
 
 ## 📄 License
 
-MIT License
+Apache License 2.0
 
 ## 🤝 Contributing
 
