@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/Carsten-Leue/fp-go-wincred/compare/v1.0.4...v1.0.5) (2026-02-19)
+
+
+### Bug Fixes
+
+* better doc ([6f7ddef](https://github.com/Carsten-Leue/fp-go-wincred/commit/6f7ddef6007d39a03cd40afe578742a08bf6fe95))
+
 ## [1.0.4](https://github.com/Carsten-Leue/fp-go-wincred/compare/v1.0.3...v1.0.4) (2026-02-19)
 
 
